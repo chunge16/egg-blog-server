@@ -1,19 +1,25 @@
 'use strict';
 
 module.exports = {
-  // 在执行数据库升级时调用的函数，创建 users 表
   up: async (queryInterface, Sequelize) => {
+    /**
+     * db:migrate 的时候调用
+     */
     const { INTEGER, DATE, STRING } = Sequelize;
     await queryInterface.createTable('users', {
       id: { type: INTEGER, primaryKey: true, autoIncrement: true },
-      name: STRING(30),
-      age: INTEGER,
+      userName: STRING(30),
+      email: STRING,
+      password: STRING,
       created_at: DATE,
       updated_at: DATE,
     });
   },
-  // 在执行数据库降级时调用的函数，删除 users 表
+
   down: async queryInterface => {
+    /**
+     * db:migrate:undo 时候调用
+     **/
     await queryInterface.dropTable('users');
   },
 };
