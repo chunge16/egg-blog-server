@@ -1,7 +1,11 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-
+const createRule = {
+  name: { type: 'string', required: true, allowEmpty: false },
+  email: { type: 'email', required: true, allowEmpty: false },
+  password: { type: 'string', required: true, allowEmpty: false },
+};
 class UserController extends Controller {
   async index() {
     const ctx = this.ctx;
@@ -19,9 +23,24 @@ class UserController extends Controller {
 
   async create() {
     const ctx = this.ctx;
-    const user = await ctx.service.user.create(ctx.request.body);
-    ctx.status = 201;
-    ctx.body = user;
+    ctx.validate(createRule, ctx.request.body);
+
+    const [ model, created ] = await ctx.service.user.create(ctx.request.body);
+
+    if (!created) {
+      ctx.body = { status: 'fail', msg: '用户已存在' };
+      ctx.status = 201;
+      return;
+    }
+    ctx.status = 200;
+    const json = model.get({ plain: true });
+    delete json.password;
+    ctx.body = {
+      status: 'ok',
+      msg: '注册成功',
+      data: json,
+    };
+
   }
 
   async update() {

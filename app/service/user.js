@@ -40,7 +40,16 @@ class User extends Service {
   }
 
   async create(user) {
-    return this.ctx.model.User.create(user);
+    return this.ctx.model.User.findOrCreate({
+      where: {
+        email: user.email,
+      },
+      defaults: {
+        name: user.name,
+        password: user.password,
+      },
+    });
+    // return this.ctx.model.User.create(user);
   }
 
   async update({ id, updates }) {
