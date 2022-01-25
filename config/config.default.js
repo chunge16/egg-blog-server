@@ -30,6 +30,11 @@ module.exports = appInfo => {
     timezone: '+08:00',
   };
 
+  config.jwt = {
+    secret: 'chunge1994',
+    expiresIn: '24h',
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',

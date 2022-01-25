@@ -24,19 +24,7 @@ class User extends Service {
   }
 
   async find(id) {
-    const user = await this.ctx.model.User.findByPk(id);
-    if (!user) {
-      // this.ctx.throw(404, 'user not found');
-      return {
-        msg: '该用户不存在',
-        status: 'fail',
-      };
-    }
-    return {
-      status: 'ok',
-      msg: 'successful',
-      data: user,
-    };
+    return this.ctx.model.User.findByPk(id);
   }
 
   async create(user) {
@@ -49,7 +37,6 @@ class User extends Service {
         password: user.password,
       },
     });
-    // return this.ctx.model.User.create(user);
   }
 
   async update({ id, updates }) {
@@ -69,6 +56,17 @@ class User extends Service {
       this.ctx.throw(404, 'user not found');
     }
     return user.destroy();
+  }
+
+  // 用户登陆
+  async login(body) {
+    const { email } = body;
+    const user = await this.ctx.model.User.findOne({
+      where: { email },
+    });
+    if (!user) return null;
+
+    return user;
   }
 }
 

@@ -18,9 +18,25 @@ class UserController extends Controller {
 
   async show() {
     const ctx = this.ctx;
-    ctx.body = await ctx.service.user.find(ctx.helper.parseInt(ctx.params.id));
+    const user = await ctx.service.user.find(ctx.params.id);
+    if (!user) {
+      ctx.body = {
+        msg: '该用户不存在',
+        status: 'fail',
+      };
+    } else {
+      const json = user.get({ plain: true });
+      delete json.password;
+      ctx.body = {
+        status: 'ok',
+        msg: '查找成功',
+        data: json,
+      };
+    }
+    ctx.status = 200;
   }
 
+  // 用户注册
   async create() {
     const ctx = this.ctx;
     ctx.validate(createRule, ctx.request.body);
@@ -56,6 +72,29 @@ class UserController extends Controller {
     await ctx.service.user.del(id);
     ctx.status = 200;
   }
+
+  // 用户登陆
+  async login() {
+    const ctx = this.ctx;
+    ctx.validate(createRule, ctx.request.body);
+    const data = await ctx.service.user.login(ctx.request.body);
+    if (!data) {
+      ctx.status = 401;
+      ctx.body = {
+        status: 'fail',
+        msg: '用户名或密码错误',
+      };
+      return;
+    }
+    ctx.body = {
+      status: 'ok',
+      msg: '登录成功',
+      data: {
+        token: data,
+      },
+    };
+  }
+
 }
 
 module.exports = UserController;
