@@ -11,7 +11,5 @@ exports.validate = {
   package: 'egg-validate',
 };
 
-exports.jwt = {
-  enable: true,
-  package: 'egg-jwt',
-};
+exports.session = true;
+

@@ -1,5 +1,6 @@
 'use strict';
 const Controller = require('egg').Controller;
+const ms = require('ms');
 const createRule = {
   name: { type: 'string', required: true, allowEmpty: false },
   email: { type: 'email', required: true, allowEmpty: false },
@@ -13,7 +14,7 @@ const loginRule = {
 class AuthController extends Controller {
   // 用户登陆
   async login() {
-    const { ctx, app } = this;
+    const { ctx } = this;
     ctx.validate(loginRule, ctx.request.body);
     const data = await ctx.service.user.login(ctx.request.body);
     // 用户是否存在
@@ -21,7 +22,7 @@ class AuthController extends Controller {
       ctx.status = 401;
       ctx.body = {
         status: 'fail',
-        msg: '用户名或密码错误',
+        msg: '该用户不存在',
       };
       return;
     }
@@ -35,19 +36,16 @@ class AuthController extends Controller {
       };
       return;
     }
-    delete json.password;
-    const token = app.jwt.sign({
-      userId: json.id,
-      name: json.name,
-      email: json.email,
-    }, app.config.jwt.secret);
+    // 是否7天记住登录
+    if (ctx.request.body.rememberMe) ctx.session.maxAge = ms('7d');
 
+    ctx.session.user = json;
+    delete json.password;
     ctx.body = {
       status: 'ok',
       msg: '登录成功',
       data: {
         ...json,
-        token,
       },
     };
   }
@@ -69,9 +67,12 @@ class AuthController extends Controller {
       ctx.status = 201;
       return;
     }
-    ctx.status = 200;
+
     const json = model.get({ plain: true });
+    ctx.session.user = json;
     delete json.password;
+
+    ctx.status = 200;
     ctx.body = {
       status: 'ok',
       msg: '注册成功',
@@ -81,7 +82,20 @@ class AuthController extends Controller {
 
   // 用户退出登录
   async loginOut() {
-
+    const { ctx } = this;
+    ctx.status = 200;
+    if (ctx.session.user) {
+      ctx.session.user = null;
+      ctx.body = {
+        status: 'ok',
+        msg: '注销成功',
+      };
+    } else {
+      ctx.body = {
+        status: 'fail',
+        msg: '当前用户尚未登录',
+      };
+    }
   }
 }
 
