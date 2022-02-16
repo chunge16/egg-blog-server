@@ -23,8 +23,9 @@ module.exports = app => {
     updated_at: DATE,
   });
 
-  Blog.prototype.associate = function() {
-    app.model.User.hasMany(app.model.Post, { as: 'posts' });
+  // 设置Blog外键
+  Blog.associate = function() {
+    app.model.Blog.belongsTo(app.model.User, { as: 'user', foreignKey: 'user_id' });
   };
 
   return Blog;

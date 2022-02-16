@@ -40,6 +40,8 @@ class AuthController extends Controller {
     if (ctx.request.body.rememberMe) ctx.session.maxAge = ms('7d');
 
     ctx.session.user = json;
+    // 调用 rotateCsrfSecret 刷新用户的 CSRF token
+    ctx.rotateCsrfSecret();
     delete json.password;
     ctx.body = {
       status: 'ok',
