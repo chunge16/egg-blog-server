@@ -2,8 +2,16 @@
 
 const Service = require('egg').Service;
 
-
 class Blog extends Service {
+  constructor(ctx) {
+    super(ctx);
+    this.blogAttributes = [
+      [ 'blog_id', 'blogId' ],
+      [ 'user_id', 'userId' ],
+      'content',
+      [ 'created_at', 'createdAt' ],
+    ];
+  }
   // list
   async list({ offset = 0, limit = 10, userId }) {
     const { ctx } = this;
@@ -11,12 +19,12 @@ class Blog extends Service {
       offset,
       limit,
       where: {},
+      attributes: this.blogAttributes,
       include: [
         {
           model: ctx.model.User,
           as: 'user',
-          attributes: { exclude: [ 'password' ],
-          },
+          attributes: { exclude: [ 'password', 'created_at', 'updated_at' ] },
         },
       ],
       order: [[ 'created_at', 'desc' ]],
@@ -30,6 +38,7 @@ class Blog extends Service {
   async find(id) {
     const { ctx } = this;
     return this.ctx.model.Blog.findByPk(id, {
+      attributes: this.blogAttributes,
       include: [{
         model: ctx.model.User,
         as: 'user',

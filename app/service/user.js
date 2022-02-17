@@ -3,6 +3,10 @@
 const Service = require('egg').Service;
 
 class User extends Service {
+  constructor(ctx) {
+    super(ctx);
+    this.attributes = [ 'id', 'name', 'email' ];
+  }
   async list({ offset = 0, limit = 10 }) {
     const data = this.ctx.model.User.findAndCountAll({
       offset,
@@ -32,6 +36,7 @@ class User extends Service {
       where: {
         email: user.email,
       },
+
       defaults: {
         name: user.name,
         password: user.password,
@@ -63,6 +68,7 @@ class User extends Service {
     const { email } = body;
     const user = await this.ctx.model.User.findOne({
       where: { email },
+      attributes: this.attributes,
     });
     if (!user) return null;
 
