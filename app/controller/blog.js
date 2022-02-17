@@ -17,6 +17,7 @@ class BlogController extends Controller {
     const limit = parseInt(ctx.query.limit) || 10;
     const offset = (page - 1) * limit;
     console.log('ctx.query', ctx.query);
+    console.log('page', page, limit, offset);
     // TODO 参数校验
     try {
       const { count, rows } = await ctx.service.blog.list({
