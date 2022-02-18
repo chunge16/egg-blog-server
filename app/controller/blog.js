@@ -94,7 +94,7 @@ class BlogController extends Controller {
       console.log('create-json', json);
       ctx.body = {
         status: 'ok',
-        msg: '获取成功',
+        msg: '新增成功',
         data: json,
       };
     } catch (e) {
@@ -136,7 +136,6 @@ class BlogController extends Controller {
       };
     }
   }
-
   // 删除博客
   async destroy() {
     const { ctx } = this;

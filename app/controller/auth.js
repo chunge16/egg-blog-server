@@ -8,8 +8,8 @@ const createRule = {
 };
 
 const loginRule = {
-  email: { type: 'email', required: true, allowEmpty: false },
-  password: { type: 'string', required: true, allowEmpty: false },
+  email: { type: 'email', allowEmpty: false },
+  password: { type: 'string', allowEmpty: false },
 };
 class AuthController extends Controller {
   // 用户登陆
